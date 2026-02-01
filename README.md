@@ -9,25 +9,22 @@ El projecte està desenvolupat amb PHP i MySQL, utilitzant sessions per gestiona
 
 ## Estructura de fitxers
 PJPHP/
-│
-├── config/
-│ └── connexio.php #Connexió a la base de dades i creació de taules
-│
-├── public/
-│ ├── login.php # Formulari d'inici de sessió
-│ ├── crear_usuari.php # Formulari per registrar nous usuaris
-│ ├── verificar_login.php # Processa el login
-│ ├── dashboard.php # Dashboard principal després del login
-│ ├── verinformacio.php # Mostrar info de l'usuari i canviar contrasenya
-│ ├── productes.php # Llista de productes de l'usuari
-│ ├── afegir_producte.php # Afegir un nou producte
-│ ├── editar_producte.php # Editar producte existent
-│ └── eliminar_producte.php # Eliminar producte
-│
-├── CSS/
-│ 
-│
-└── index.php # Redirigeix automàticament a login.php
+config/
+connexio.php #Connexió a la base de dades i creació de taules
+
+public/
+login.php # Formulari d'inici de sessió
+crear_usuari.php # Formulari per registrar nous usuaris
+verificar_login.php # Processa el login
+dashboard.php # Dashboard principal després del login
+verinformacio.php # Mostrar info de l'usuari i canviar contrasenya
+productes.php # Llista de productes de l'usuari
+afegir_producte.php # Afegir un nou producte
+editar_producte.php # Editar producte existent
+eliminar_producte.php # Eliminar producte
+
+CSS/
+index.php # Redirigeix automàticament a login.php
 
 
 ---
