@@ -48,7 +48,7 @@ body {
 }
 
 
-.info p {
+.container p {
     margin: 12px 0;
     font-size: 16px;
     word-wrap: break-word;
@@ -92,15 +92,14 @@ body {
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
 }
 
-/* MENSAJE */
+
 .mensaje {
     margin-top: 15px;
-    color: green;
     font-weight: 500;
     text-align: center;
 }
 
-/* ENLACE VOLVER */
+
 .back {
     display: block;
     margin-top: 25px;

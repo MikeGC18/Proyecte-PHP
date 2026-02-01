@@ -2,35 +2,45 @@
 require_once __DIR__ . "/../auth/auth.php";
 require_once __DIR__ . "/../config/connexio.php";
 
-$user_id = $_SESSION['usuari_id'];
+$userId = $_SESSION['usuari_id'];
 
-// Obtenim informació de l'usuari amb la consulta sql
+// Obtenim informació del usuari amb consulta sql
 $stmt = $conn->prepare("SELECT username, password, ultima_sessio FROM usuaris WHERE id = ?");
-$stmt->bind_param("i", $user_id);
+$stmt->bind_param("i", $userId);
 $stmt->execute();
 $result = $stmt->get_result();
-$usuari = $result->fetch_assoc();
+$user = $result->fetch_assoc();
 
-if (!$usuari) {
+if (!$user) {
     die("Usuari no trobat");
 }
 
-// Opció canviar contrasenya
 $mensaje = '';
+$mensajeColor = 'green';
+
+// comprovació de canvi de contrasenya
 if ($_POST) {
-    $actual = $_POST['actual'] ?? '';
-    $nova = $_POST['nova'] ?? '';
+    $passActual = $_POST['actual'] ?? '';
+    $passNova = $_POST['nova'] ?? '';
 
-    if (password_verify($actual, $usuari['password'])) {
-        $nova_hash = password_hash($nova, PASSWORD_DEFAULT);
-        $stmt = $conn->prepare("UPDATE usuaris SET password = ? WHERE id = ?");
-        $stmt->bind_param("si", $nova_hash, $user_id);
-        $stmt->execute();
-
-        $mensaje = "Contrasenya actualitzada correctament!";
-        $usuari['password'] = $nova_hash;
+    if (!password_verify($passActual, $user['password'])) {
+        $mensaje = "Contrasenya actual incorrecte.";
+        $mensajeColor = 'red';
+    } elseif (strlen($passNova) < 8) {
+        $mensaje = "La nova contrasenya ha de tenir com a mínim 8 caràcters.";
+        $mensajeColor = 'red';
     } else {
-        $mensaje = "Contrasenya actual incorrecta.";
+        $passHash = password_hash($passNova, PASSWORD_DEFAULT);
+        $stmt = $conn->prepare("UPDATE usuaris SET password = ? WHERE id = ?");
+        $stmt->bind_param("si", $passHash, $userId);
+        if ($stmt->execute()) {
+            $mensaje = "Contrasenya actualitzada correctament!";
+            $user['password'] = $passHash; // Mantener sesión
+            $mensajeColor = 'green';
+        } else {
+            $mensaje = "Error al actualizar la contrasenya: " . $stmt->error;
+            $mensajeColor = 'red';
+        }
     }
 }
 ?>
@@ -39,22 +49,18 @@ if ($_POST) {
 <html lang="ca">
 <head>
     <meta charset="UTF-8">
-    <title>Informació Usuari</title>
+    <title>Informació de l'usuari</title>
     <link rel="stylesheet" href="CSS/verinformacio.css">
 </head>
 <body>
-
 <div class="container">
-
     <h2>Informació de l'usuari</h2>
 
     <div class="info">
-        <p><strong>Usuari:</strong> <?= htmlspecialchars($usuari['username']) ?></p>
-        <p><strong>Contrasenya (hash):</strong> <?= htmlspecialchars($usuari['password']) ?></p>
-        <p><strong>Última sessió:</strong> <?= $usuari['ultima_sessio'] ?? 'No registrat' ?></p>
+        <p><strong>Usuari:</strong> <?= htmlspecialchars($user['username']) ?></p>
+        <p><strong>Contrasenya (hash):</strong> <?= htmlspecialchars($user['password']) ?></p>
+        <p><strong>Última sessió:</strong> <?= $user['ultima_sessio'] ?? 'No registrat' ?></p>
     </div>
-
-    <hr>
 
     <h3>Canviar contrasenya</h3>
     <form method="post" class="password-form">
@@ -67,13 +73,13 @@ if ($_POST) {
         <button type="submit">Canviar contrasenya</button>
     </form>
 
-    <?php if ($mensaje): ?>
-        <p class="mensaje"><?= htmlspecialchars($mensaje) ?></p>
+    <?php if($mensaje): ?>
+        <p class="mensaje" style="color: <?= $mensajeColor ?>;"><?= htmlspecialchars($mensaje) ?></p>
     <?php endif; ?>
 
     <a href="dashboard.php" class="back">⬅ Tornar al Dashboard</a>
-
 </div>
-
 </body>
 </html>
+
+
